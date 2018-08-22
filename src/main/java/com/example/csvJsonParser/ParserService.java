@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +36,8 @@ public class ParserService {
         private int line;
     }
 
-    public void parseFiles(List<String> filenames) {
+    public ArrayList<String> parseFiles(List<String> filenames) {
+        ArrayList<String> result = new ArrayList<>();
         ArrayList<File> files = new ArrayList<>();
         for (String filename : filenames) {
             files.add(new File(filename));
@@ -43,21 +45,22 @@ public class ParserService {
 
         for (File f : files) {
             parser = parserFactory.getParser(f);
-            //Stream<String> stream;
             AtomicInteger i = new AtomicInteger();
 
             try {
+                result.addAll(
                 Files.lines(f.toPath(), Charset.forName("UTF-8"))
                         .map(s -> toRawString(s, i.getAndIncrement()))
                         .parallel()
                         .map(o -> toOrderResponse(o, f.getName()))
                         .map(this::toJSONString)
                         .filter(Objects::nonNull)
-                        .forEach(System.out::println);
+                        .collect(Collectors.toList()));
             } catch (IOException e) {
                 log.error(e.getMessage());
             }
         }
+        return result;
     }
 
     private RawString toRawString(String data, int line) {
@@ -71,7 +74,7 @@ public class ParserService {
             response.setResult("OK");
         } catch (ParseException e) {
             if (e.getCause() != null)
-                log.warn("{} line: {} :: {} :: {}", filename, s.line, e.getMessage(), e.getCause().getMessage());
+                log.warn("{} line: {} :: {} :: {}", filename, s.line, e.getMessage(), e.getCause().toString());
             else log.warn("{} line: {} :: {}", filename, s.line, e.getMessage());
 
             response = new OrderResponse();

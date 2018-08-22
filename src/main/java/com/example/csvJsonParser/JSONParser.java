@@ -13,15 +13,12 @@ import java.io.IOException;
 public class JSONParser implements Parser {
 
     @Autowired
-    Validator validator;
+    ObjectMapper mapper;
 
     @Override
     public Order parseLine(String s) throws ParseException {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            Order order = mapper.readValue(s, Order.class);
-            validator.isValid(order);
-            return order;
+            return mapper.readValue(s, Order.class);
         } catch (IOException e) {
             throw new ParseException("JSON parse exception", e);
         }
