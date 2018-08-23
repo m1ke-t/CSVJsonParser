@@ -4,8 +4,6 @@ import com.example.csvJsonParser.model.Currency;
 import com.example.csvJsonParser.model.Order;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.internal.runners.statements.ExpectException;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

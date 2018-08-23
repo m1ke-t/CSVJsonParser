@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component
+@Component("csv")
 public class CSVParser implements Parser {
 
     public Order parseLine(String csvLine) throws ParseException {

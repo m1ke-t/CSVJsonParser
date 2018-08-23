@@ -13,9 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 public class ParserService {
 
     @Autowired
-    ParserFactory parserFactory;
+    Map<String, Parser> parsers = new HashMap<>();
 
     private Parser parser;
     private ObjectMapper mapper = new ObjectMapper();
@@ -44,7 +42,8 @@ public class ParserService {
         }
 
         for (File f : files) {
-            parser = parserFactory.getParser(f);
+            String filename = f.getName();
+            parser = parsers.get(filename.substring(filename.lastIndexOf('.') + 1));
             AtomicInteger i = new AtomicInteger();
 
             try {
@@ -57,7 +56,7 @@ public class ParserService {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList()));
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.warn(e.toString());
             }
         }
         return result;
@@ -89,7 +88,7 @@ public class ParserService {
         try {
             return mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
-            log.error("{} line: {} :: {} :: {}", response.getFilename(), response.getLine(), "Object to JSON string mapping error", e.getMessage());
+            log.warn("{} line: {} :: {} :: {}", response.getFilename(), response.getLine(), "Object to JSON string mapping error", e.getMessage());
         }
         return null;
     }

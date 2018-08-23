@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Slf4j
-@Component
+@Component("json")
 public class JSONParser implements Parser {
 
     @Autowired
