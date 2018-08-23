@@ -4,6 +4,8 @@ import com.example.csvJsonParser.model.Currency;
 import com.example.csvJsonParser.model.Order;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.internal.runners.statements.ExpectException;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +29,6 @@ public class CSVParserTest {
         Assert.assertEquals(result.getAmount(), (Integer) 100500);
         Assert.assertEquals(result.getCurrency(), Currency.USD);
         Assert.assertEquals(result.getComment(), "comment");
-
     }
 
     @Test
@@ -79,5 +80,17 @@ public class CSVParserTest {
         Assert.assertEquals(result.getAmount(), (Integer) 2500);
         Assert.assertEquals(result.getCurrency(), Currency.EUR);
         Assert.assertEquals(result.getComment(), "Comm,entary");
+    }
+
+    @Test (expected = ParseException.class)
+    public void test_string_with_incorrect_fields() throws ParseException {
+        String line = "234,,USD,comment";
+        CSVParser.parseLine(line);
+    }
+
+    @Test (expected = ParseException.class)
+    public void test_string_with_incorrect_number_of_fields() throws ParseException {
+        String line = "123,577,comment";
+        CSVParser.parseLine(line);
     }
 }
