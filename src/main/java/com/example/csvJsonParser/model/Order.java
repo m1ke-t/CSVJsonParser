@@ -1,5 +1,6 @@
 package com.example.csvJsonParser.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ public class Order {
     private Currency currency;
     private String comment;
 
-    //@JsonCreator
+    @JsonCreator
     public Order(Long orderId, Integer amount, Currency currency, String comment) {
         this.orderId = orderId;
         this.amount = amount;
